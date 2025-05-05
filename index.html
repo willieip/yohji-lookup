@@ -230,6 +230,8 @@ button:hover {
 <div style="font-weight:600; margin-top:2em;">History</div>
 <ul id="history" style="list-style: none; padding: 0; margin: 0;"></ul>
 <script>
+let originalSeasonKey = null;
+
 const brandMap = {
   H: "Yohji Yamamoto POUR HOMME",
   F: "Yohji Yamamoto Femme",
@@ -251,23 +253,31 @@ const itemMap = {
 };
 
 const seasonMap = {
-        O: ["2011 S/S", "2024 A/W"],
-        C: ["1999 S/S", "2010 A/W", "2019 A/W"],
-        B: ["1995 S/S", "2000 S/S", "2006 S/S", "2006 A/W", "2012 S/S"],
-        T: ["1994 S/S", "2000 A/W", "2007 S/S"],
-        V: ["1994 A/W", "2001 A/W", "2009 S/S", "2018 A/W", "2022 A/W"],
-        E: ["1995 A/W", "2002 S/S", "2008 A/W", "2022 A/W"],
-        P: "2025 S/S",
-        S: "2023 S/S",
-        J: "2023 A/W",
-        D: "2021 S/S",
-        X: "2021 A/W",
-        G: "2022 S/S",
-        H: "2019 S/S",
-        R: "2020 A/W",
-        M: "2002 A/W",
-        Y: "2005 S/S"
-      };
+  O: ["1993 S/S", "2011 S/S", "2024 A/W"],
+  C: ["1999 S/S", "2010 A/W", "2019 A/W"],
+  B: ["1995 S/S", "2000 S/S", "2006 S/S", "2006 A/W", "2012 S/S"],
+  T: ["1994 S/S", "2000 A/W", "2007 S/S"],
+  V: ["1994 A/W", "2001 A/W", "2009 S/S", "2018 A/W", "2022 A/W"],
+  E: ["1995 A/W", "2002 S/S", "2008 A/W", "2022 A/W"],
+  P: ["1993 A/W", "2011 A/W", "2025 S/S"],
+  S: ["1992 A/W", "2023 S/S", "2024 S/S"],
+  J: ["2004 A/W", "2010 S/S", "2023 A/W"],
+  D: ["2012 A/W", "2017 S/S", "2021 S/S"],
+  X: ["2001 S/S", "2007 A/W", "2013 S/S", "2021 A/W"],
+  G: ["1996 A/W", "2014 S/S", "2022 S/S"],
+  H: ["2019 S/S"],
+  R: ["2016 A/W", "2020 A/W"],
+  M: ["1998 S/S", "2002 A/W", "2008 S/S"],
+  Y: ["1998 A/W", "2005 S/S", "2015 A/W"],
+  F: ["1996 S/S", "2014 A/W"],
+  U: ["1997 S/S", "2003 A/W", "2015 S/S"],
+  I: ["1997 A/W"],
+  Q: ["2003 S/S", "2013 A/W"],
+  Z: ["2004 S/S", "2009 A/W"],
+  K: ["2017 A/W"],
+  W: ["2018 S/S"],
+  N: ["1999 A/W", "2005 A/W", "2020 S/S"]
+};
 
 document.getElementById("serialInput").addEventListener("input", function(e) {
   let val = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
@@ -279,6 +289,7 @@ document.getElementById("serialInput").addEventListener("input", function(e) {
     e.target.value = val;
   }
 });
+
 
 function decodeSerial() {
   const input = document.getElementById("serialInput").value.toUpperCase().trim();
@@ -297,38 +308,54 @@ function decodeSerial() {
     }
   }
 
+  originalSeasonKey = serial[1]; // Always assign after serial is set
+
   const brand = brandMap[serial[0]] || "Unknown Brand";
-  
-      let seasonRaw = seasonMap[serial[1]];
-      let season = "Unknown Season";
-      if (Array.isArray(seasonRaw)) {
-        season = seasonRaw.join(" or ");
-      } else if (typeof seasonRaw === "string") {
-        season = seasonRaw;
-      }
-    
+  let seasonRaw = seasonMap[serial[1]];
+  let season = "Unknown Season";
+  if (Array.isArray(seasonRaw)) {
+    season = seasonRaw.join(" or ");
+  } else if (typeof seasonRaw === "string") {
+    season = seasonRaw;
+  }
+
   const item = itemMap[serial[2]] || "Unknown Item Type";
 
   const googleSearch = `https://www.google.com/search?tbm=isch&q=Yohji+Yamamoto+${encodeURIComponent(input)}`;
-document.getElementById("output").innerHTML = `
+  document.getElementById("output").innerHTML = `
     <strong>Serial:</strong> ${serial}<br>
     <strong>Brand Line:</strong> ${brand}<br>
-    <strong>Season / Year:</strong> ${season}<br>
+    <strong id="seasonLine"><strong>Season / Year:</strong> ${season}</strong><br>
     <strong>Item Type:</strong> ${item}
+    <br>
+    <div style="margin-top: 1em;">
+      <hr style="border: none; border-top: 1px solid #eee; margin-top: 16px 0;"/>
+      
+      <strong>Help narrow it down:</strong><br>
+
+      <label><strong>Is the sizing alphabetical or numerical?</strong></label><br>
+      <input type="radio" name="sizeType" value="alpha" onchange="refineSeason()"> S, M, L<br>
+      <input type="radio" name="sizeType" value="numeric" onchange="refineSeason()"> 1, 2, 3<br>
+      <input type="radio" name="sizeType" value="unknown" checked onchange="refineSeason()"> ¯|_(ツ)_|¯ <br><br>
+
+      <label><strong>Where are the laundry care symbols located?</strong></label><br>
+      <input type="radio" name="laundryPos" value="below" onchange="refineSeason()"> Below the text<br>
+      <input type="radio" name="laundryPos" value="above" onchange="refineSeason()"> Above the text<br>
+      <input type="radio" name="laundryPos" value="unknown" checked onchange="refineSeason()"> ¯|_(ツ)_|¯<br>
+    </div>
+    <br><a href="${googleSearch}" target="_blank">🔍 Search this serial on Google Images</a>
   `;
-  document.getElementById("output").innerHTML += `<br><a href="${googleSearch}" target="_blank">🔍 Search this serial on Google Images</a>`;
 
-    document.getElementById("output").style.display = "block";
+  document.getElementById("output").style.display = "block";
 
-    // Save to history
-    let history = JSON.parse(localStorage.getItem("yohjiHistory") || "[]");
-    history.unshift({ serial: input, brand, season, item });
-    history = history.slice(0, 10); // limit to last 10
-    localStorage.setItem("yohjiHistory", JSON.stringify(history));
-    renderHistory();
-    
+  // Save to history
+  let history = JSON.parse(localStorage.getItem("yohjiHistory") || "[]");
+  history.unshift({ serial: input, brand, season, item });
+  history = history.slice(0, 10); // limit to last 10
+  localStorage.setItem("yohjiHistory", JSON.stringify(history));
+
+  renderHistory();
 }
-
 function renderHistory() {
   const container = document.getElementById("history");
   if (!container) return;
@@ -338,6 +365,51 @@ function renderHistory() {
   ).join("");
 }
 renderHistory();
+
+
+function refineSeason() {
+  if (!originalSeasonKey) return;
+  const seasonLine = document.getElementById("seasonLine");
+  const sizeType = document.querySelector('input[name="sizeType"]:checked')?.value;
+  const laundryPos = document.querySelector('input[name="laundryPos"]:checked')?.value;
+
+  let seasons = seasonMap[originalSeasonKey];
+  if (!seasons || seasons.length === 0) {
+    seasonLine.innerHTML = "<strong>Season / Year:</strong> Unknown";
+    return;
+  }
+
+  let filtered = seasons.slice();
+
+  if (sizeType === "alpha") {
+    filtered = filtered.filter(s => {
+      let yr = parseInt(s.split(" ")[0]);
+      return yr < 1999 || (yr === 1999 && s.includes("S/S"));
+    });
+  } else if (sizeType === "numeric") {
+    filtered = filtered.filter(s => {
+      let yr = parseInt(s.split(" ")[0]);
+      return yr > 2000 || (yr === 2000 && s.includes("S/S"));
+    });
+  }
+
+  if (laundryPos === "below") {
+    filtered = filtered.filter(s => {
+      let yr = parseInt(s.split(" ")[0]);
+      return yr < 2016 || (yr === 2016 && s.includes("S/S"));
+    });
+  } else if (laundryPos === "above") {
+    filtered = filtered.filter(s => {
+      let yr = parseInt(s.split(" ")[0]);
+      return yr > 2017 || (yr === 2017 && s.includes("S/S"));
+    });
+  }
+
+  const finalResult = filtered.length > 0 ? filtered[0] : "Not identifiable";
+  seasonLine.innerHTML = "<strong>Season / Year:</strong> " + finalResult;
+}
+
+
 </script>
 </div>
 <div style="flex: 1; min-width: 300px;">
@@ -410,3 +482,4 @@ renderHistory();
 </details></div>
 </div>
 </body></html>
+}
