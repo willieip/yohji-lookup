@@ -1,40 +1,234 @@
 
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Yohji Serial  Lookup</title>
-  <style>
-    body { font-family: sans-serif; margin: 20px; padding: 0; background: #f8f8f8; color: #333; }
+<style>
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.layout {
+  display: flex;
+  height: 100vh;
+}
+
+.left-pane, .right-pane {
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.left-pane {
+  width: 50%;
+  overflow-y: auto;
+  position: sticky;
+  top: 0;
+  align-self: flex-start;
+  height: 100vh;
+}
+
+.right-pane {
+  width: 50%;
+  overflow-y: auto;
+  height: 100vh;
+}
+
+@media (max-width: 768px) {
+  .layout {
+    display: block;
+  }
+  .left-pane, .right-pane {
+    width: 100%;
+    height: auto;
+  }
+}
+
+hr.divider {
+  margin: 2rem 0;
+  border: none;
+  border-top: 1px solid #ccc;
+}
+
+h2, h3 {
+  font-weight: 500;
+  line-height: 1;
+}
+
+h2 {
+  font-size: 4.0em;
+  margin: 0 0 1.5rem 0;
+}
+
+.search-wrapper {
+  position: relative;
+  max-width: 480px;
+  margin-bottom: 1.5rem;
+}
+
+#serialInput {
+  width: 100%;
+  padding: 12px 44px;
+  border: 1px solid #ddd;
+  border-radius: 9999px;
+  background-color: #fafafa;
+  font-size: 1rem;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+#serialInput:focus {
+  outline: none;
+  border-color: black;
+  box-shadow: 0 0 0 2px rgba(0,0,0,0.1);
+}
+
+.search-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  width: 18px;
+  height: 18px;
+  fill: #888;
+}
+
+button {
+  padding: 10px 20px;
+  background-color: black;
+  color: white;
+  border: none;
+  border-radius: 9999px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: background-color 0.2s ease;
+}
+
+button:hover {
+  background-color: #333;
+}
+
+.scrollable-refchart {
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+</style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Yohji Serial&nbsp;Lookup</title>
+<style>
+    body { font-family: sans-serif; margin: 20px; padding: 0; background: #f8f8f8; color: #333; line-height: 1.73; }
     input, button { font-size: 1em; padding: 0.5em; margin-right: 0.5em; }
     .result { margin-top: 1em; background: white; padding: 1em; border: 1px solid #ddd; border-radius: 8px; width: fit-content; }
   </style>
-
-  <style>
+<style>
     summary:hover,
     a:hover {
       text-decoration: underline;
+      text-underline-offset: 3px;
+      text-decoration-thickness: 2px;
     }
   </style>
+<style>
+#serialInput {
+  width: 100%;
+  max-width: 400px;
+  padding: 12px 16px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-family: inherit;
+  background-color: #fafafa;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  margin-bottom: 1rem;
+}
+#serialInput:focus {
+  outline: none;
+  border-color: black;
+  box-shadow: 0 0 0 2px rgba(0,0,0,0.1);
+}
+#serialInput::placeholder {
+  color: #aaa;
+  font-style: italic;
+}
+</style>
+<style>
+button {
+  padding: 10px 20px;
+  background-color: black;
+  color: white;
+  border: none;
+  border-radius: 9999px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: background-color 0.2s ease;
+}
+button:hover {
+  background-color: #333;
+}
+</style>
+<style>
+@media (max-width: 768px) {
+  .column {
+    width: 100% !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+}
+</style>
+<style>
+.scrollable-refchart {
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+</style>
+<style>
+@media (min-width: 769px) {
+  .layout-wrapper {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+  }
+  .fixed-left {
+    width: 50%;
+    padding-right: 2rem;
+    overflow-y: auto;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+  }
+  .scrolling-right {
+    width: 50%;
+    padding-left: 2rem;
+    overflow-y: scroll;
+    height: 100vh;
+  }
+}
+@media (max-width: 768px) {
+  .layout-wrapper {
+    display: block;
+  }
+  .fixed-left, .scrolling-right {
+    width: 100%;
+    height: auto;
+  }
+}
+</style>
 </head>
-
 <body style="font-family: -apple-system, BlinkMacSystemFont, 'SF Pro', 'San Francisco', 'Helvetica Neue', sans-serif;">
 <div style="display: flex; gap: 3em; flex-wrap: wrap;">
 <div style="flex: 1; min-width: 300px;">
-
-<h2>Yohji Yamamoto Serial Lookup</h2>
-<input type="text" id="serialInput" value="HC-C23-100" placeholder="Enter serial (e.g., HC-C23-100 or HCP)" />
+<h2 style="font-size: 4.0em; margin: 0 0 1.5rem 0; padding: 0; font-weight: 400; line-height: 1; letter-spacing: -1px;">Yohji Yamamoto Serial&nbsp;Lookup</h2>
+<input id="serialInput" placeholder="Enter serial (e.g., HC-C23-100 or HCP)" type="text" value="HC-C23-100"/>
 <button onclick="decodeSerial()">Lookup</button>
-
-
-    <div id="output" class="result" style="display: none;"></div>
-
-    
-    <div style="font-weight:600; margin-top:2em;">History</div>
-<ul id="history" style="list-style: none; padding-left: 0;" style="background:#fff; padding:1em; border:1px solid #ddd; border-radius:8px;"></ul>
-    
-
+<div class="result" id="output" style="display: none;"></div>
+<hr style="border: none; border-top: 1px solid #eee; margin: 2em 0;"/>
+<div style="font-weight:600; margin-top:2em;">History</div>
+<ul id="history" style="list-style: none; padding: 0; margin: 0;"></ul>
 <script>
 const brandMap = {
   H: "Yohji Yamamoto POUR HOMME",
@@ -57,11 +251,23 @@ const itemMap = {
 };
 
 const seasonMap = {
-  S: "1992 A/W", C: "2019 A/W", N: "2020 S/S", B: "2012 S/S", T: "2007 S/S", X: "2021 A/W", 
-  V: "2018 A/W", E: "2008 A/W", M: "2008 S/S", Q: "2013 A/W", U: "2015 S/S", Z: "2009 A/W",
-  J: "2023 A/W", Y: "2015 A/W", O: "2024 A/W", P: "2025 S/S", D: "2021 S/S", K: "2017 A/W",
-  W: "2018 S/S", G: "2022 S/S", R: "2020 A/W", H: "2019 S/S"
-};
+        O: ["2011 S/S", "2024 A/W"],
+        C: ["1999 S/S", "2010 A/W", "2019 A/W"],
+        B: ["1995 S/S", "2000 S/S", "2006 S/S", "2006 A/W", "2012 S/S"],
+        T: ["1994 S/S", "2000 A/W", "2007 S/S"],
+        V: ["1994 A/W", "2001 A/W", "2009 S/S", "2018 A/W", "2022 A/W"],
+        E: ["1995 A/W", "2002 S/S", "2008 A/W", "2022 A/W"],
+        P: "2025 S/S",
+        S: "2023 S/S",
+        J: "2023 A/W",
+        D: "2021 S/S",
+        X: "2021 A/W",
+        G: "2022 S/S",
+        H: "2019 S/S",
+        R: "2020 A/W",
+        M: "2002 A/W",
+        Y: "2005 S/S"
+      };
 
 document.getElementById("serialInput").addEventListener("input", function(e) {
   let val = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
@@ -92,7 +298,15 @@ function decodeSerial() {
   }
 
   const brand = brandMap[serial[0]] || "Unknown Brand";
-  const season = seasonMap[serial[1]] || "Unknown Season";
+  
+      let seasonRaw = seasonMap[serial[1]];
+      let season = "Unknown Season";
+      if (Array.isArray(seasonRaw)) {
+        season = seasonRaw.join(" or ");
+      } else if (typeof seasonRaw === "string") {
+        season = seasonRaw;
+      }
+    
   const item = itemMap[serial[2]] || "Unknown Item Type";
 
   const googleSearch = `https://www.google.com/search?tbm=isch&q=Yohji+Yamamoto+${encodeURIComponent(input)}`;
@@ -125,86 +339,74 @@ function renderHistory() {
 }
 renderHistory();
 </script>
-
 </div>
 <div style="flex: 1; min-width: 300px;">
-  
 <details>
-  <summary style="cursor: pointer; font-weight: bold; font-size: 1.1em;">Reference Chart</summary>
-  <div style="margin-top: 1em;">
-
-  <strong>Brand Line</strong><br>
+<summary style="cursor: pointer; font-size: 4.0em; margin: 0 0 1.5rem 0; padding: 0; font-weight: 400; line-height: 1; letter-spacing: -1px;">Reference Chart</summary>
+<div style="margin-top: 1em;">
+<strong>Brand Line</strong><br/>
   
-    H – Yohji Yamamoto POUR HOMME <br>
-    F – Yohji Yamamoto Femme<br>
-    N – Yohji Yamamoto Noir<br>
-    L – Limi fue<br>
-    Y – Y's<br>
-    M – Y's for men <br>
-  </ul>
-
-  
-<hr style='border: none; border-top: 1px solid #eee; margin: 2em 0;'>
-<strong>Season / Year</strong><br>
+    H – Yohji Yamamoto POUR HOMME <br/>
+    F – Yohji Yamamoto Femme<br/>
+    N – Yohji Yamamoto Noir<br/>
+    L – Limi fue<br/>
+    Y – Y's<br/>
+    M – Y's for men <br/>
+<hr style="border: none; border-top: 1px solid #eee; margin: 2em 0;"/>
+<strong>Season / Year</strong><br/>
 <table style="width:100%; font-size: 0.95em; border-collapse: collapse;">
-  <tbody>
-    <tr><td>S – 1992 A/W</td><td>O – 1993 S/S</td></tr>
-    <tr><td>P – 1993 A/W</td><td>T – 1994 S/S</td></tr>
-    <tr><td>V – 1994 A/W</td><td>B – 1995 S/S</td></tr>
-    <tr><td>E – 1995 A/W</td><td>F – 1996 S/S</td></tr>
-    <tr><td>G – 1996 A/W</td><td>U – 1997 S/S</td></tr>
-    <tr><td>I – 1997 A/W</td><td>M – 1998 S/S</td></tr>
-    <tr><td>Y – 1998 A/W</td><td>C – 1999 S/S</td></tr>
-    <tr><td>N – 1999 A/W</td><td>B – 2000 S/S</td></tr>
-    <tr><td>T – 2000 A/W</td><td>X – 2001 S/S</td></tr>
-    <tr><td>V – 2001 A/W</td><td>E – 2002 S/S</td></tr>
-    <tr><td>M – 2002 A/W</td><td>Q – 2003 S/S</td></tr>
-    <tr><td>U – 2003 A/W</td><td>Z – 2004 S/S</td></tr>
-    <tr><td>J – 2004 A/W</td><td>Y – 2005 S/S</td></tr>
-    <tr><td>N – 2005 A/W</td><td>B – 2006 S/S</td></tr>
-    <tr><td>B – 2006 A/W</td><td>T – 2007 S/S</td></tr>
-    <tr><td>X – 2007 A/W</td><td>M – 2008 S/S</td></tr>
-    <tr><td>E – 2008 A/W</td><td>V – 2009 S/S</td></tr>
-    <tr><td>Z – 2009 A/W</td><td>J – 2010 S/S</td></tr>
-    <tr><td>C – 2010 A/W</td><td>O – 2011 S/S</td></tr>
-    <tr><td>P – 2011 A/W</td><td>B – 2012 S/S</td></tr>
-    <tr><td>D – 2012 A/W</td><td>X – 2013 S/S</td></tr>
-    <tr><td>Q – 2013 A/W</td><td>G – 2014 S/S</td></tr>
-    <tr><td>F – 2014 A/W</td><td>U – 2015 S/S</td></tr>
-    <tr><td>Y – 2015 A/W</td><td>O – 2016 S/S</td></tr>
-    <tr><td>R – 2016 A/W</td><td>D – 2017 S/S</td></tr>
-    <tr><td>K – 2017 A/W</td><td>W – 2018 S/S</td></tr>
-    <tr><td>V – 2018 A/W</td><td>H – 2019 S/S</td></tr>
-    <tr><td>C – 2019 A/W</td><td>N – 2020 S/S</td></tr>
-    <tr><td>R – 2020 A/W</td><td>D – 2021 S/S</td></tr>
-    <tr><td>X – 2021 A/W</td><td>G – 2022 S/S</td></tr>
-    <tr><td>V, E – 2022 A/W</td><td>S – 2023 S/S</td></tr>
-    <tr><td>J – 2023 A/W</td><td>S – 2024 S/S</td></tr>
-    <tr><td>O – 2024 A/W</td><td>P – 2025 S/S</td></tr>
-  </tbody>
+<tbody>
+<tr><td>S – 1992 A/W</td><td>O – 1993 S/S</td></tr>
+<tr><td>P – 1993 A/W</td><td>T – 1994 S/S</td></tr>
+<tr><td>V – 1994 A/W</td><td>B – 1995 S/S</td></tr>
+<tr><td>E – 1995 A/W</td><td>F – 1996 S/S</td></tr>
+<tr><td>G – 1996 A/W</td><td>U – 1997 S/S</td></tr>
+<tr><td>I – 1997 A/W</td><td>M – 1998 S/S</td></tr>
+<tr><td>Y – 1998 A/W</td><td>C – 1999 S/S</td></tr>
+<tr><td>N – 1999 A/W</td><td>B – 2000 S/S</td></tr>
+<tr><td>T – 2000 A/W</td><td>X – 2001 S/S</td></tr>
+<tr><td>V – 2001 A/W</td><td>E – 2002 S/S</td></tr>
+<tr><td>M – 2002 A/W</td><td>Q – 2003 S/S</td></tr>
+<tr><td>U – 2003 A/W</td><td>Z – 2004 S/S</td></tr>
+<tr><td>J – 2004 A/W</td><td>Y – 2005 S/S</td></tr>
+<tr><td>N – 2005 A/W</td><td>B – 2006 S/S</td></tr>
+<tr><td>B – 2006 A/W</td><td>T – 2007 S/S</td></tr>
+<tr><td>X – 2007 A/W</td><td>M – 2008 S/S</td></tr>
+<tr><td>E – 2008 A/W</td><td>V – 2009 S/S</td></tr>
+<tr><td>Z – 2009 A/W</td><td>J – 2010 S/S</td></tr>
+<tr><td>C – 2010 A/W</td><td>O – 2011 S/S</td></tr>
+<tr><td>P – 2011 A/W</td><td>B – 2012 S/S</td></tr>
+<tr><td>D – 2012 A/W</td><td>X – 2013 S/S</td></tr>
+<tr><td>Q – 2013 A/W</td><td>G – 2014 S/S</td></tr>
+<tr><td>F – 2014 A/W</td><td>U – 2015 S/S</td></tr>
+<tr><td>Y – 2015 A/W</td><td>O – 2016 S/S</td></tr>
+<tr><td>R – 2016 A/W</td><td>D – 2017 S/S</td></tr>
+<tr><td>K – 2017 A/W</td><td>W – 2018 S/S</td></tr>
+<tr><td>V – 2018 A/W</td><td>H – 2019 S/S</td></tr>
+<tr><td>C – 2019 A/W</td><td>N – 2020 S/S</td></tr>
+<tr><td>R – 2020 A/W</td><td>D – 2021 S/S</td></tr>
+<tr><td>X – 2021 A/W</td><td>G – 2022 S/S</td></tr>
+<tr><td>V, E – 2022 A/W</td><td>S – 2023 S/S</td></tr>
+<tr><td>J – 2023 A/W</td><td>S – 2024 S/S</td></tr>
+<tr><td>O – 2024 A/W</td><td>P – 2025 S/S</td></tr>
+</tbody>
 </table>
-<hr style='border: none; border-top: 1px solid #eee; margin: 2em 0;'>
-<strong>Item Type</strong><br>
+<hr style="border: none; border-top: 1px solid #eee; margin: 2em 0;"/>
+<strong>Item Type</strong><br/>
   
-    J – Jacket<br>
-    C – Coat<br>
-    S – Skirt<br>
-    B – Blouse / Shirt<br>
-    P – Pants / Trousers<br>
-    K – Knit<br>
-    T – Top<br>
-    E – Shoes<br>
-  
-
-
-
-  <p style="font-size: 0.95em; margin-top: 1em; background: #fff8dc; padding: 0.5em; border-left: 4px solid #f0ad4e;">
-    <strong>Note:</strong> Some codes like <strong>"C"</strong> are reused across multiple seasons 
+    J – Jacket<br/>
+    C – Coat<br/>
+    S – Skirt<br/>
+    B – Blouse / Shirt<br/>
+    P – Pants / Trousers<br/>
+    K – Knit<br/>
+    T – Top<br/>
+    E – Shoes<br/>
+<p style="font-size: 0.95em; margin-top: 1em; background: #fff8dc; padding: 0.5em; border-left: 4px solid #f0ad4e;">
+<strong>Note:</strong> Some codes like <strong>"C"</strong> are reused across multiple seasons 
     (e.g., <em>1999 S/S</em>, <em>2010 A/W</em>, <em>2019 A/W</em>). To disambiguate, the full serial number (like <code>HC-C23-100</code>) and collection number help confirm the exact season.
   </p>
 </div>
-  </div>
-</details>
-
+</details></div>
 </div>
-</div>
+</body></html>
