@@ -1,0 +1,210 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Yohji Serial Lookup</title>
+  <style>
+    body { font-family: sans-serif; margin: 20px; padding: 0; background: #f8f8f8; color: #333; }
+    input, button { font-size: 1em; padding: 0.5em; margin-right: 0.5em; }
+    .result { margin-top: 1em; background: white; padding: 1em; border: 1px solid #ddd; border-radius: 8px; width: fit-content; }
+  </style>
+
+  <style>
+    summary:hover,
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'SF Pro', 'San Francisco', 'Helvetica Neue', sans-serif;">
+<div style="display: flex; gap: 3em; flex-wrap: wrap;">
+<div style="flex: 1; min-width: 300px;">
+
+<h2>Yohji Yamamoto Serial Lookup</h2>
+<input type="text" id="serialInput" value="HC-C23-100" placeholder="Enter serial (e.g., HC-C23-100 or HCP)" />
+<button onclick="decodeSerial()">Lookup</button>
+
+
+    <div id="output" class="result" style="display: none;"></div>
+
+    
+    <div style="font-weight:600; margin-top:2em;">History</div>
+<ul id="history" style="list-style: none; padding-left: 0;" style="background:#fff; padding:1em; border:1px solid #ddd; border-radius:8px;"></ul>
+    
+
+<script>
+const brandMap = {
+  H: "Yohji Yamamoto POUR HOMME",
+  F: "Yohji Yamamoto Femme",
+  N: "Yohji Yamamoto Noir",
+  L: "Limi fue",
+  Y: "Y's",
+  M: "Y's for men"
+};
+
+const itemMap = {
+  E: "Shoes",
+  J: "Jacket",
+  C: "Coat",
+  S: "Skirt",
+  B: "Blouse / Shirt",
+  P: "Pants / Trousers",
+  K: "Knit",
+  T: "Top"
+};
+
+const seasonMap = {
+  S: "1992 A/W", C: "2019 A/W", N: "2020 S/S", B: "2012 S/S", T: "2007 S/S", X: "2021 A/W", 
+  V: "2018 A/W", E: "2008 A/W", M: "2008 S/S", Q: "2013 A/W", U: "2015 S/S", Z: "2009 A/W",
+  J: "2023 A/W", Y: "2015 A/W", O: "2024 A/W", P: "2025 S/S", D: "2021 S/S", K: "2017 A/W",
+  W: "2018 S/S", G: "2022 S/S", R: "2020 A/W", H: "2019 S/S"
+};
+
+document.getElementById("serialInput").addEventListener("input", function(e) {
+  let val = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
+  if (val.length === 3) {
+    e.target.value = val;
+  } else if (val.length === 8) {
+    e.target.value = `${val[0]}${val[1]}-${val[2]}${val[3]}${val[4]}-${val[5]}${val[6]}${val[7]}`;
+  } else {
+    e.target.value = val;
+  }
+});
+
+function decodeSerial() {
+  const input = document.getElementById("serialInput").value.toUpperCase().trim();
+  let serial = "";
+
+  const matchFull = input.match(/^([HFLNYM])[- ]?([A-Z])[- ]?([A-Z])\d{2}-\d{3}$/);
+  if (matchFull) {
+    serial = matchFull[1] + matchFull[2] + matchFull[3];
+  } else {
+    const letters = input.replace(/[^A-Z]/g, "");
+    if (letters.length >= 3) {
+      serial = letters.substring(0, 3);
+    } else {
+      alert("Invalid input. Please enter a serial like HC-C23-100 or at least the first three letters.");
+      return;
+    }
+  }
+
+  const brand = brandMap[serial[0]] || "Unknown Brand";
+  const season = seasonMap[serial[1]] || "Unknown Season";
+  const item = itemMap[serial[2]] || "Unknown Item Type";
+
+  const googleSearch = `https://www.google.com/search?tbm=isch&q=Yohji+Yamamoto+${encodeURIComponent(input)}`;
+document.getElementById("output").innerHTML = `
+    <strong>Serial:</strong> ${serial}<br>
+    <strong>Brand Line:</strong> ${brand}<br>
+    <strong>Season / Year:</strong> ${season}<br>
+    <strong>Item Type:</strong> ${item}
+  `;
+  document.getElementById("output").innerHTML += `<br><a href="${googleSearch}" target="_blank">🔍 Search this serial on Google Images</a>`;
+
+    document.getElementById("output").style.display = "block";
+
+    // Save to history
+    let history = JSON.parse(localStorage.getItem("yohjiHistory") || "[]");
+    history.unshift({ serial: input, brand, season, item });
+    history = history.slice(0, 10); // limit to last 10
+    localStorage.setItem("yohjiHistory", JSON.stringify(history));
+    renderHistory();
+    
+}
+
+function renderHistory() {
+  const container = document.getElementById("history");
+  if (!container) return;
+  const history = JSON.parse(localStorage.getItem("yohjiHistory") || "[]");
+  container.innerHTML = history.map(entry => 
+    `<li><strong>${entry.serial}</strong>: ${entry.brand}, ${entry.season}, ${entry.item}</li>`
+  ).join("");
+}
+renderHistory();
+</script>
+
+</div>
+<div style="flex: 1; min-width: 300px;">
+  
+<details>
+  <summary style="cursor: pointer; font-weight: bold; font-size: 1.1em;">Reference Chart</summary>
+  <div style="margin-top: 1em;">
+
+  <strong>Brand Line</strong><br>
+  
+    H – Yohji Yamamoto POUR HOMME <br>
+    F – Yohji Yamamoto Femme<br>
+    N – Yohji Yamamoto Noir<br>
+    L – Limi fue<br>
+    Y – Y's<br>
+    M – Y's for men <br>
+  </ul>
+
+  
+<hr style='border: none; border-top: 1px solid #eee; margin: 2em 0;'>
+<strong>Season / Year</strong><br>
+<table style="width:100%; font-size: 0.95em; border-collapse: collapse;">
+  <tbody>
+    <tr><td>S – 1992 A/W</td><td>O – 1993 S/S</td></tr>
+    <tr><td>P – 1993 A/W</td><td>T – 1994 S/S</td></tr>
+    <tr><td>V – 1994 A/W</td><td>B – 1995 S/S</td></tr>
+    <tr><td>E – 1995 A/W</td><td>F – 1996 S/S</td></tr>
+    <tr><td>G – 1996 A/W</td><td>U – 1997 S/S</td></tr>
+    <tr><td>I – 1997 A/W</td><td>M – 1998 S/S</td></tr>
+    <tr><td>Y – 1998 A/W</td><td>C – 1999 S/S</td></tr>
+    <tr><td>N – 1999 A/W</td><td>B – 2000 S/S</td></tr>
+    <tr><td>T – 2000 A/W</td><td>X – 2001 S/S</td></tr>
+    <tr><td>V – 2001 A/W</td><td>E – 2002 S/S</td></tr>
+    <tr><td>M – 2002 A/W</td><td>Q – 2003 S/S</td></tr>
+    <tr><td>U – 2003 A/W</td><td>Z – 2004 S/S</td></tr>
+    <tr><td>J – 2004 A/W</td><td>Y – 2005 S/S</td></tr>
+    <tr><td>N – 2005 A/W</td><td>B – 2006 S/S</td></tr>
+    <tr><td>B – 2006 A/W</td><td>T – 2007 S/S</td></tr>
+    <tr><td>X – 2007 A/W</td><td>M – 2008 S/S</td></tr>
+    <tr><td>E – 2008 A/W</td><td>V – 2009 S/S</td></tr>
+    <tr><td>Z – 2009 A/W</td><td>J – 2010 S/S</td></tr>
+    <tr><td>C – 2010 A/W</td><td>O – 2011 S/S</td></tr>
+    <tr><td>P – 2011 A/W</td><td>B – 2012 S/S</td></tr>
+    <tr><td>D – 2012 A/W</td><td>X – 2013 S/S</td></tr>
+    <tr><td>Q – 2013 A/W</td><td>G – 2014 S/S</td></tr>
+    <tr><td>F – 2014 A/W</td><td>U – 2015 S/S</td></tr>
+    <tr><td>Y – 2015 A/W</td><td>O – 2016 S/S</td></tr>
+    <tr><td>R – 2016 A/W</td><td>D – 2017 S/S</td></tr>
+    <tr><td>K – 2017 A/W</td><td>W – 2018 S/S</td></tr>
+    <tr><td>V – 2018 A/W</td><td>H – 2019 S/S</td></tr>
+    <tr><td>C – 2019 A/W</td><td>N – 2020 S/S</td></tr>
+    <tr><td>R – 2020 A/W</td><td>D – 2021 S/S</td></tr>
+    <tr><td>X – 2021 A/W</td><td>G – 2022 S/S</td></tr>
+    <tr><td>V, E – 2022 A/W</td><td>S – 2023 S/S</td></tr>
+    <tr><td>J – 2023 A/W</td><td>S – 2024 S/S</td></tr>
+    <tr><td>O – 2024 A/W</td><td>P – 2025 S/S</td></tr>
+  </tbody>
+</table>
+<hr style='border: none; border-top: 1px solid #eee; margin: 2em 0;'>
+<strong>Item Type</strong><br>
+  
+    J – Jacket<br>
+    C – Coat<br>
+    S – Skirt<br>
+    B – Blouse / Shirt<br>
+    P – Pants / Trousers<br>
+    K – Knit<br>
+    T – Top<br>
+    E – Shoes<br>
+  
+
+
+
+  <p style="font-size: 0.95em; margin-top: 1em; background: #fff8dc; padding: 0.5em; border-left: 4px solid #f0ad4e;">
+    <strong>Note:</strong> Some codes like <strong>"C"</strong> are reused across multiple seasons 
+    (e.g., <em>1999 S/S</em>, <em>2010 A/W</em>, <em>2019 A/W</em>). To disambiguate, the full serial number (like <code>HC-C23-100</code>) and collection number help confirm the exact season.
+  </p>
+</div>
+  </div>
+</details>
+
+</div>
+</div>
