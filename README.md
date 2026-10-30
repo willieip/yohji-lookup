@@ -2,7 +2,7 @@
 
 Find the garment behind a Yohji Yamamoto product code. Search a real catalog of source-linked garment records, browse photographs and brand lines, and continue to retailer searches when an item is missing.
 
-This is an independent reference project. It is not affiliated with Yohji Yamamoto.
+This is an independent reference project. It is not affiliated with Yohji Yamamoto. The original two-column design, large sans-serif headings, gray background, black Lookup button, History, and Reference Chart are retained. The new garment database opens in the right column.
 
 ![Yohji Lookup showing a recorded garment, photograph, full product code, and official source.](docs/preview.png)
 

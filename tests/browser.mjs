@@ -34,8 +34,12 @@ try {
   await page.goto(base);
   await page.waitForFunction(() => !document.getElementById('catalog-filter').disabled);
   assert.equal(await page.locator('.product-card').count(), 12);
-  assert.match(await page.locator('#catalog-total').innerText(), /source records/);
+  assert.match(await page.locator('#catalog-total').textContent(), /source records/);
   assert.equal(await page.locator('#code-input').inputValue(), '');
+  assert.equal((await page.locator('h1').innerText()).replaceAll('\u00a0', ' '), 'Yohji Yamamoto Serial Lookup');
+  assert.equal(await page.locator('#reference-title').innerText(), 'Reference Chart');
+  assert.equal(await page.locator('#catalog').getAttribute('open'), null);
+  await page.locator('#catalog-title').click();
   await page.locator('.product-image img').first().waitFor();
   await page.waitForFunction(() => [...document.querySelectorAll('#catalog-grid img')].slice(0, 4).every((img) => img.complete), null, { timeout: 15000 });
   await page.screenshot({ path: new URL('desktop.png', artifacts).pathname, fullPage: true });
@@ -50,7 +54,9 @@ try {
   assert.match(await page.locator('.result-card').first().innerText(), new RegExp(fixture.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
   assert.equal(new URL(page.url()).searchParams.get('code'), exactCode);
   assert.equal(await page.locator('.result-source-link').first().getAttribute('href'), fixture.sourceUrl);
+  await page.locator('#catalog-title').click();
   await page.screenshot({ path: new URL('match.png', artifacts).pathname, fullPage: true });
+  await page.locator('#catalog-title').click();
   await lookup(`${fixture.code}-99-99`);
   assert.equal(await page.locator('#result-kicker').textContent(), 'Variant unconfirmed');
   assert.equal(await page.locator('.match-badge:not(.unconfirmed)').count(), 0);

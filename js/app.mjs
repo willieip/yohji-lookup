@@ -110,6 +110,7 @@ function resultCard({ record, matchType }, index) {
 function renderHistory(codes = readHistory(storage)) {
   $('history-list').replaceChildren(...codes.map((code) => actionButton(code, 'history-button', () => submitCode(code))));
   $('history-section').hidden = codes.length === 0;
+  $('clear-history').hidden = codes.length === 0;
 }
 
 function updateAddress(code, push = true) {
@@ -291,7 +292,6 @@ function populateCatalogInfo() {
   if (!examples.length && state.records[0]) examples.push(state.records[0].code);
   $('example-buttons').replaceChildren(...examples.map((code) => actionButton(code, 'example-button', () => submitCode(code))));
   $('examples').hidden = !examples.length;
-  if (examples[0]) $('illustration-code').textContent = examples[0];
 }
 
 let catalogRequest = null;
