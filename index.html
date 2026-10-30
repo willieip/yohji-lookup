@@ -1,431 +1,66 @@
-
-<!DOCTYPE html>
-
+<!doctype html>
 <html lang="en">
 <head>
-<style>
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-}
-
-.layout {
-  display: flex;
-  height: 100vh;
-}
-
-.left-pane, .right-pane {
-  padding: 20px;
-  box-sizing: border-box;
-}
-
-.left-pane {
-  width: 50%;
-  overflow-y: auto;
-  position: sticky;
-  top: 0;
-  align-self: flex-start;
-  height: 100vh;
-}
-
-.right-pane {
-  width: 50%;
-  overflow-y: auto;
-  height: 100vh;
-}
-
-@media (max-width: 768px) {
-  .layout {
-    display: block;
-  }
-  .left-pane, .right-pane {
-    width: 100%;
-    height: auto;
-  }
-}
-
-hr.divider {
-  margin: 2rem 0;
-  border: none;
-  border-top: 1px solid #ccc;
-}
-
-h2, h3 {
-  font-weight: 500;
-  line-height: 1;
-}
-
-h2 {
-  font-size: 4.0em;
-  margin: 0 0 1.5rem 0;
-}
-
-.search-wrapper {
-  position: relative;
-  max-width: 480px;
-  margin-bottom: 1.5rem;
-}
-
-#serialInput {
-  width: 100%;
-  padding: 12px 44px;
-  border: 1px solid #ddd;
-  border-radius: 9999px;
-  background-color: #fafafa;
-  font-size: 1rem;
-  transition: border-color 0.3s, box-shadow 0.3s;
-}
-
-#serialInput:focus {
-  outline: none;
-  border-color: black;
-  box-shadow: 0 0 0 2px rgba(0,0,0,0.1);
-}
-
-.search-icon {
-  position: absolute;
-  left: 16px;
-  top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none;
-  width: 18px;
-  height: 18px;
-  fill: #888;
-}
-
-button {
-  padding: 10px 20px;
-  background-color: black;
-  color: white;
-  border: none;
-  border-radius: 9999px;
-  cursor: pointer;
-  font-size: 1rem;
-  font-family: inherit;
-  transition: background-color 0.2s ease;
-}
-
-button:hover {
-  background-color: #333;
-}
-
-.scrollable-refchart {
-  max-height: 400px;
-  overflow-y: auto;
-  padding-right: 8px;
-}
-</style>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Yohji Serial&nbsp;Lookup</title>
-<style>
-    body { font-family: sans-serif; margin: 20px; padding: 0; background: #f8f8f8; color: #333; line-height: 1.73; }
-    input, button { font-size: 1em; padding: 0.5em; margin-right: 0.5em; }
-    .result { margin-top: 1em; background: white; padding: 1em; border: 1px solid #ddd; border-radius: 8px; width: fit-content; }
-  </style>
-<style>
-    summary:hover,
-    a:hover {
-      text-decoration: underline;
-      text-underline-offset: 3px;
-      text-decoration-thickness: 2px;
-    }
-  </style>
-<style>
-#serialInput {
-  width: 100%;
-  max-width: 400px;
-  padding: 12px 16px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 1rem;
-  font-family: inherit;
-  background-color: #fafafa;
-  transition: border-color 0.3s, box-shadow 0.3s;
-  margin-bottom: 1rem;
-}
-#serialInput:focus {
-  outline: none;
-  border-color: black;
-  box-shadow: 0 0 0 2px rgba(0,0,0,0.1);
-}
-#serialInput::placeholder {
-  color: #aaa;
-  font-style: italic;
-}
-</style>
-<style>
-button {
-  padding: 10px 20px;
-  background-color: black;
-  color: white;
-  border: none;
-  border-radius: 9999px;
-  cursor: pointer;
-  font-size: 1rem;
-  font-family: inherit;
-  transition: background-color 0.2s ease;
-}
-button:hover {
-  background-color: #333;
-}
-</style>
-<style>
-@media (max-width: 768px) {
-  .column {
-    width: 100% !important;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-  }
-}
-</style>
-<style>
-.scrollable-refchart {
-  max-height: 400px;
-  overflow-y: auto;
-  padding-right: 8px;
-}
-</style>
-<style>
-@media (min-width: 769px) {
-  .layout-wrapper {
-    display: flex;
-    height: 100vh;
-    overflow: hidden;
-  }
-  .fixed-left {
-    width: 50%;
-    padding-right: 2rem;
-    overflow-y: auto;
-    position: sticky;
-    top: 0;
-    height: 100vh;
-  }
-  .scrolling-right {
-    width: 50%;
-    padding-left: 2rem;
-    overflow-y: scroll;
-    height: 100vh;
-  }
-}
-@media (max-width: 768px) {
-  .layout-wrapper {
-    display: block;
-  }
-  .fixed-left, .scrolling-right {
-    width: 100%;
-    height: auto;
-  }
-}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f8f8f8">
+  <meta name="description" content="Look up Yohji Yamamoto product codes, find the matching garment, and check its original source.">
+  <title>Yohji Serial Lookup</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./js/app.mjs"></script>
 </head>
-<body style="font-family: -apple-system, BlinkMacSystemFont, 'SF Pro', 'San Francisco', 'Helvetica Neue', sans-serif;">
-<div style="display: flex; gap: 3em; flex-wrap: wrap;">
-<div style="flex: 1; min-width: 300px;">
-<h2 style="font-size: 4.0em; margin: 0 0 1.5rem 0; padding: 0; font-weight: 400; line-height: 1; letter-spacing: -1px;">Yohji Yamamoto Serial&nbsp;Lookup</h2>
-<input id="serialInput" placeholder="Enter serial (e.g., HC-C23-100 or HCP)" type="text" value="HC-C23-100"/>
-<button onclick="decodeSerial()">Lookup</button>
-<div class="result" id="output" style="display: none;"></div>
-<hr style="border: none; border-top: 1px solid #eee; margin: 2em 0;"/>
-<div style="font-weight:600; margin-top:2em;">History</div>
-<ul id="history" style="list-style: none; padding: 0; margin: 0;"></ul>
-<script>
-let originalSeasonKey = null;
+<body>
+  <a class="skip-link" href="#main">Skip to lookup</a>
+  <div class="original-layout">
+    <main id="main" class="column">
+      <h1>Yohji Yamamoto Serial&nbsp;Lookup</h1>
+      <form id="lookup-form" novalidate>
+        <label class="sr-only" for="code-input">Product code</label>
+        <div class="lookup-field">
+          <input id="code-input" name="code" type="text" placeholder="Enter serial (e.g., HC-C23-100 or HCP)" maxlength="48" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-describedby="code-help code-error">
+          <button id="lookup-button" type="submit">Lookup</button>
+        </div>
+        <p class="small muted" id="code-help">Enter the full code to find a garment. Three letters show label clues only.</p>
+        <p class="input-error" id="code-error" role="alert" hidden></p>
+      </form>
+      <p class="small muted" id="hero-coverage">Loading the source catalog…</p>
+      <div class="example-row" id="examples" hidden><span class="small muted">Try:</span><div id="example-buttons"></div></div>
+      <p class="sr-only" id="result-status" role="status" aria-live="polite" aria-atomic="true"></p>
+      <section class="result" id="results" aria-labelledby="result-title" hidden>
+        <p><strong>Product code:</strong> <span id="query-code"></span></p>
+        <p class="small" id="result-kicker"></p>
+        <h2 id="result-title" tabindex="-1"></h2>
+        <p class="small muted" id="result-description"></p>
+        <div class="result-grid" id="result-grid"></div><div id="result-actions"></div>
+        <details class="code-clues" id="code-clues" hidden>
+          <summary>Read the label <span class="muted">— unconfirmed clues</span></summary>
+          <div id="clue-content"></div>
+          <p class="small muted">Season letters are reused. A letter alone cannot confirm a collection or year; check the garment against its source.</p>
+        </details>
+        <div class="continue-search" id="continue-search" hidden>
+          <h3>Continue the search</h3><p class="small muted">These links search your code. They are not confirmed matches.</p>
+          <div class="search-links" id="search-links"></div>
+        </div>
+      </section>
+      <hr>
+      <div class="history-heading"><strong>History</strong><button class="text-button" id="clear-history" type="button" hidden>Clear</button></div>
+      <div id="history-section" hidden><div id="history-list"></div></div>
+    </main>
+    <aside class="column">
+      <details class="reference-chart" aria-labelledby="reference-title">
 
-const brandMap = {
-  H: "Yohji Yamamoto POUR HOMME",
-  F: "Yohji Yamamoto Femme",
-  N: "Yohji Yamamoto Noir",
-  L: "Limi fue",
-  Y: "Y's",
-  M: "Y's for men"
-};
-
-const itemMap = {
-  E: "Shoes",
-  J: "Jacket",
-  C: "Coat",
-  S: "Skirt",
-  B: "Blouse / Shirt",
-  P: "Pants / Trousers",
-  K: "Knit",
-  T: "Top"
-};
-
-const seasonMap = {
-  O: ["1993 S/S", "2011 S/S", "2024 A/W"],
-  C: ["1999 S/S", "2010 A/W", "2019 A/W"],
-  B: ["1995 S/S", "2000 S/S", "2006 S/S", "2006 A/W", "2012 S/S"],
-  T: ["1994 S/S", "2000 A/W", "2007 S/S"],
-  V: ["1994 A/W", "2001 A/W", "2009 S/S", "2018 A/W", "2022 A/W"],
-  E: ["1995 A/W", "2002 S/S", "2008 A/W", "2022 A/W"],
-  P: ["1993 A/W", "2011 A/W", "2025 S/S"],
-  S: ["1992 A/W", "2023 S/S", "2024 S/S"],
-  J: ["2004 A/W", "2010 S/S", "2023 A/W"],
-  D: ["2012 A/W", "2017 S/S", "2021 S/S"],
-  X: ["2001 S/S", "2007 A/W", "2013 S/S", "2021 A/W"],
-  G: ["1996 A/W", "2014 S/S", "2022 S/S"],
-  H: ["2019 S/S"],
-  R: ["2016 A/W", "2020 A/W"],
-  M: ["1998 S/S", "2002 A/W", "2008 S/S"],
-  Y: ["1998 A/W", "2005 S/S", "2015 A/W"],
-  F: ["1996 S/S", "2014 A/W"],
-  U: ["1997 S/S", "2003 A/W", "2015 S/S"],
-  I: ["1997 A/W"],
-  Q: ["2003 S/S", "2013 A/W"],
-  Z: ["2004 S/S", "2009 A/W"],
-  K: ["2017 A/W"],
-  W: ["2018 S/S"],
-  N: ["1999 A/W", "2005 A/W", "2020 S/S"]
-};
-
-document.getElementById("serialInput").addEventListener("input", function(e) {
-  let val = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
-  if (val.length === 3) {
-    e.target.value = val;
-  } else if (val.length === 8) {
-    e.target.value = `${val[0]}${val[1]}-${val[2]}${val[3]}${val[4]}-${val[5]}${val[6]}${val[7]}`;
-  } else {
-    e.target.value = val;
-  }
-});
-
-
-function decodeSerial() {
-  const input = document.getElementById("serialInput").value.toUpperCase().trim();
-  let serial = "";
-
-  const matchFull = input.match(/^([HFLNYM])[- ]?([A-Z])[- ]?([A-Z])\d{2}-\d{3}$/);
-  if (matchFull) {
-    serial = matchFull[1] + matchFull[2] + matchFull[3];
-  } else {
-    const letters = input.replace(/[^A-Z]/g, "");
-    if (letters.length >= 3) {
-      serial = letters.substring(0, 3);
-    } else {
-      alert("Invalid input. Please enter a serial like HC-C23-100 or at least the first three letters.");
-      return;
-    }
-  }
-
-  originalSeasonKey = serial[1]; // Always assign after serial is set
-
-  const brand = brandMap[serial[0]] || "Unknown Brand";
-  let seasonRaw = seasonMap[serial[1]];
-  let season = "Unknown Season";
-  if (Array.isArray(seasonRaw)) {
-    season = seasonRaw.join(" or ");
-  } else if (typeof seasonRaw === "string") {
-    season = seasonRaw;
-  }
-
-  const item = itemMap[serial[2]] || "Unknown Item Type";
-
-  const googleSearch = `https://www.google.com/search?tbm=isch&q=Yohji+Yamamoto+${encodeURIComponent(input)}`;
-  document.getElementById("output").innerHTML = `
-    <strong>Serial:</strong> ${serial}<br>
-    <strong>Brand Line:</strong> ${brand}<br>
-    <strong id="seasonLine"><strong>Season / Year:</strong> ${season}</strong><br>
-    <strong>Item Type:</strong> ${item}
-    <br>
-    <div style="margin-top: 1em;">
-      <hr style="border: none; border-top: 1px solid #eee; margin-top: 16px 0;"/>
-      
-      <strong>Help narrow it down:</strong><br>
-
-      <label><strong>Is the sizing alphabetical or numerical?</strong></label><br>
-      <input type="radio" name="sizeType" value="alpha" onchange="refineSeason()"> S, M, L<br>
-      <input type="radio" name="sizeType" value="numeric" onchange="refineSeason()"> 1, 2, 3<br>
-      <input type="radio" name="sizeType" value="unknown" checked onchange="refineSeason()"> ¯|_(ツ)_|¯ <br><br>
-
-      <label><strong>Where are the laundry care symbols located?</strong></label><br>
-      <input type="radio" name="laundryPos" value="below" onchange="refineSeason()"> Below the text<br>
-      <input type="radio" name="laundryPos" value="above" onchange="refineSeason()"> Above the text<br>
-      <input type="radio" name="laundryPos" value="unknown" checked onchange="refineSeason()"> ¯|_(ツ)_|¯<br>
-    </div>
-    <br><a href="${googleSearch}" target="_blank">🔍 Search this serial on Google Images</a>
-  `;
-
-  document.getElementById("output").style.display = "block";
-
-  // Save to history
-  let history = JSON.parse(localStorage.getItem("yohjiHistory") || "[]");
-  history.unshift({ serial: input, brand, season, item });
-  history = history.slice(0, 10); // limit to last 10
-  localStorage.setItem("yohjiHistory", JSON.stringify(history));
-
-  renderHistory();
-}
-function renderHistory() {
-  const container = document.getElementById("history");
-  if (!container) return;
-  const history = JSON.parse(localStorage.getItem("yohjiHistory") || "[]");
-  container.innerHTML = history.map(entry => 
-    `<li><strong>${entry.serial}</strong>: ${entry.brand}, ${entry.season}, ${entry.item}</li>`
-  ).join("");
-}
-renderHistory();
-
-
-function refineSeason() {
-  if (!originalSeasonKey) return;
-  const seasonLine = document.getElementById("seasonLine");
-  const sizeType = document.querySelector('input[name="sizeType"]:checked')?.value;
-  const laundryPos = document.querySelector('input[name="laundryPos"]:checked')?.value;
-
-  let seasons = seasonMap[originalSeasonKey];
-  if (!seasons || seasons.length === 0) {
-    seasonLine.innerHTML = "<strong>Season / Year:</strong> Unknown";
-    return;
-  }
-
-  let filtered = seasons.slice();
-
-  if (sizeType === "alpha") {
-    filtered = filtered.filter(s => {
-      let yr = parseInt(s.split(" ")[0]);
-      return yr < 1999 || (yr === 1999 && s.includes("S/S"));
-    });
-  } else if (sizeType === "numeric") {
-    filtered = filtered.filter(s => {
-      let yr = parseInt(s.split(" ")[0]);
-      return yr > 2000 || (yr === 2000 && s.includes("S/S"));
-    });
-  }
-
-  if (laundryPos === "below") {
-    filtered = filtered.filter(s => {
-      let yr = parseInt(s.split(" ")[0]);
-      return yr < 2016 || (yr === 2016 && s.includes("S/S"));
-    });
-  } else if (laundryPos === "above") {
-    filtered = filtered.filter(s => {
-      let yr = parseInt(s.split(" ")[0]);
-      return yr > 2017 || (yr === 2017 && s.includes("S/S"));
-    });
-  }
-
-  const finalResult = filtered.length > 0 ? filtered[0] : "Not identifiable";
-  seasonLine.innerHTML = "<strong>Season / Year:</strong> " + finalResult;
-}
-
-
-</script>
-</div>
-<div style="flex: 1; min-width: 300px;">
-<details>
-<summary style="cursor: pointer; font-size: 4.0em; margin: 0 0 1.5rem 0; padding: 0; font-weight: 400; line-height: 1; letter-spacing: -1px;">Reference Chart</summary>
+<summary class="reference-title" id="reference-title">Reference Chart</summary>
 <div style="margin-top: 1em;">
 <strong>Brand Line</strong><br/>
-  
+
     H – Yohji Yamamoto POUR HOMME <br/>
     F – Yohji Yamamoto Femme<br/>
     N – Yohji Yamamoto Noir<br/>
-    L – Limi fue<br/>
+    L – LIMI feu<br/>
     Y – Y's<br/>
     M – Y's for men <br/>
 <hr style="border: none; border-top: 1px solid #eee; margin: 2em 0;"/>
-<strong>Season / Year</strong><br/>
+<strong>Season / Year</strong><br/><p class="small muted">Original reference chart; these dates are unverified clues, not confirmed item dates. Season letters repeat across years and lines.</p>
 <table style="width:100%; font-size: 0.95em; border-collapse: collapse;">
 <tbody>
 <tr><td>S – 1992 A/W</td><td>O – 1993 S/S</td></tr>
@@ -465,7 +100,7 @@ function refineSeason() {
 </table>
 <hr style="border: none; border-top: 1px solid #eee; margin: 2em 0;"/>
 <strong>Item Type</strong><br/>
-  
+
     J – Jacket<br/>
     C – Coat<br/>
     S – Skirt<br/>
@@ -474,12 +109,40 @@ function refineSeason() {
     K – Knit<br/>
     T – Top<br/>
     E – Shoes<br/>
-<p style="font-size: 0.95em; margin-top: 1em; background: #fff8dc; padding: 0.5em; border-left: 4px solid #f0ad4e;">
-<strong>Note:</strong> Some codes like <strong>"C"</strong> are reused across multiple seasons 
-    (e.g., <em>1999 S/S</em>, <em>2010 A/W</em>, <em>2019 A/W</em>). To disambiguate, the full serial number (like <code>HC-C23-100</code>) and collection number help confirm the exact season.
-  </p>
+<p class="reference-note"><strong>Note:</strong> Codes such as C are reused across multiple seasons. Confirm a garment against a source listing or collection evidence. This chart does not determine the lookup result.</p>
 </div>
-</details></div>
-</div>
-</body></html>
-}
+
+      </details>
+      <details class="catalog-section" id="catalog">
+        <summary id="catalog-title">Garment database</summary>
+        <p class="small muted" id="catalog-total">Loading…</p>
+        <div class="catalog-toolbar">
+          <div class="catalog-filter"><label for="catalog-filter">Filter by name or code</label><input id="catalog-filter" type="search" placeholder="Try a product name or code" autocomplete="off" disabled></div>
+          <div class="brand-filter"><label for="brand-filter">Brand line</label><select id="brand-filter" disabled><option value="">All brand lines</option></select></div>
+        </div>
+        <div class="catalog-state" id="catalog-state" role="status">Loading the catalog…</div>
+        <div class="catalog-grid" id="catalog-grid"></div>
+        <div class="pagination" id="pagination" hidden>
+          <p class="small muted" id="page-label" role="status" aria-live="polite"></p>
+          <div><button id="previous-page" type="button">← Previous</button><button id="next-page" type="button">Next →</button></div>
+        </div>
+      </details>
+      <details class="about-section" id="about">
+        <summary>About the database</summary>
+        <dl class="source-facts">
+          <div><dt>Source</dt><dd><a href="https://theshopyohjiyamamoto.com/" target="_blank" rel="noopener noreferrer">THE SHOP YOHJI YAMAMOTO ↗</a></dd></div>
+          <div><dt>Coverage</dt><dd id="coverage-text">Official shop product records; historical coverage varies.</dd></div>
+          <div><dt>Last import</dt><dd id="catalog-updated">Loading…</dd></div>
+        </dl>
+        <p>This is a snapshot of the official shop’s public product records. It is not a complete historical archive: older collections, removed listings, and items sold only elsewhere can be missing.</p>
+        <p>A product code match shares the complete base code. An exact recorded code also matches the suffix you entered. If only the base matches, the result is labeled “Variant unconfirmed.”</p>
+        <p>Search engines can find separate retailer, resale, and collector listings that are not in this database. Use the source searches if a code is missing here.</p>
+        <p>Refreshes keep previously imported records when they disappear from the live feed. Observation dates are not garment production dates. Open the original listing for current details and availability.</p>
+        <p class="small muted">Independent reference project. Not affiliated with Yohji Yamamoto. Product names and photographs belong to their respective owners.</p>
+        <a href="https://github.com/willieip/yohji-lookup" target="_blank" rel="noopener noreferrer">View project on GitHub</a>
+      </details>
+    </aside>
+  </div>
+  <noscript><p>Enable JavaScript to search the garment database, or visit <a href="https://theshopyohjiyamamoto.com/">the official shop</a>.</p></noscript>
+</body>
+</html>
