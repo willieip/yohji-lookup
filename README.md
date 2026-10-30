@@ -2,7 +2,7 @@
 
 Find the garment behind a Yohji Yamamoto product code. Search a real catalog of source-linked garment records, browse photographs and brand lines, and continue to retailer searches when an item is missing.
 
-This is an independent reference project. It is not affiliated with Yohji Yamamoto. The original two-column design, large sans-serif headings, gray background, black Lookup button, History, and Reference Chart are retained. The new garment database opens in the right column.
+This is an independent reference project. It is not affiliated with Yohji Yamamoto. The original two-column design, large sans-serif headings, gray background, black Lookup button, History, and Reference Chart are retained. The full Reference Chart is visible on page load and can be linked directly with `#reference-chart`. The new garment database opens in the right column.
 
 ![Yohji Lookup showing a recorded garment, photograph, full product code, and official source.](docs/preview.png)
 
@@ -42,6 +42,14 @@ The snapshot imported on **October 30, 2026** contains **9,095 product/colorway 
 `coverage.complete` means the importer reached the end of the public feed during that run. It does not mean every Yohji garment ever made is indexed. Because the live feed can change while pages are fetched, its raw row count can differ from the deduplicated product count.
 
 The app fetches its own checked-in JSON snapshot. Browser searches require no API key or cross-site catalog request. Product photographs load from the source's image URLs; the original listing remains the authority for details, stock, and pricing. No prices, stock claims, full descriptions, or inferred seasons are stored.
+
+## Runway references
+
+The open Reference Chart includes links to the [official shop lookbooks](https://theshopyohjiyamamoto.jp/shop/pages/look_list.aspx), the [official POUR HOMME collection archive](https://www.yohjiyamamoto.co.jp/en/collection/homme/), and [Vogue Runway](https://www.vogue.com/fashion-shows/designer/yohji-yamamoto).
+
+A documented example connects jacket `HW-J42-832` to [official A/W 2026–27 Look 39](https://theshopyohjiyamamoto.jp/shop/o/oH26AW39/) and [Vogue’s Fall 2026 menswear Look 39](https://www.vogue.com/fashion-shows/fall-2026-menswear/yohji-yamamoto/slideshow/collection#39). The [official garment listing](https://theshopyohjiyamamoto.jp/shop/g/gHW-J42-832-1-02/) explicitly names the collection and look; Vogue supplies the runway gallery. These links were checked on October 30, 2026.
+
+These are research references, not an automatic runway-matching database. Product-code matching is unchanged. No runway year or look number is inferred from a letter, image similarity, or catalog observation date.
 
 ## Run locally
 
