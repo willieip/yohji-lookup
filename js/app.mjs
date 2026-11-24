@@ -1,4 +1,5 @@
 import { normalizeCode, findMatches, getCodeHints, buildSearchLinks, readHistory, saveHistory, clearHistory } from './lookup.mjs';
+import { setupCodeScanner } from './scan.mjs';
 
 const $ = (id) => document.getElementById(id);
 const PAGE_SIZE = 12;
@@ -334,6 +335,7 @@ async function loadCatalog() {
   return catalogRequest;
 }
 
+setupCodeScanner({ button: $('scan-code'), photo: $('label-photo'), input: $('code-input'), status: $('scan-status') });
 $('lookup-form').addEventListener('submit', (event) => { event.preventDefault(); submitCode($('code-input').value); });
 $('code-input').addEventListener('input', () => { $('code-error').hidden = true; $('code-input').removeAttribute('aria-invalid'); });
 $('clear-history').addEventListener('click', () => renderHistory(clearHistory(storage)));
