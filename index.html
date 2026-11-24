@@ -19,8 +19,11 @@
         <div class="lookup-field">
           <input id="code-input" name="code" type="text" placeholder="Enter serial (e.g., HC-C23-100 or HCP)" maxlength="48" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-describedby="code-help code-error">
           <button id="lookup-button" type="submit">Lookup</button>
+          <button id="scan-code" class="button-secondary" type="button">Scan label</button>
+          <input id="label-photo" type="file" accept="image/*" capture="environment" hidden>
         </div>
         <p class="small muted" id="code-help">Enter the full code to find a garment. Three letters show label clues only.</p>
+        <p class="small muted" id="scan-status" role="status"></p>
         <p class="input-error" id="code-error" role="alert" hidden></p>
       </form>
       <p class="small muted" id="hero-coverage">Loading the source catalog…</p>
