@@ -1,3 +1,4 @@
+import { archiveRecords, findArchiveLeads } from './archive.mjs';
 import { normalizeCode, findMatches, getCodeHints, buildSearchLinks, readHistory, saveHistory, clearHistory } from './lookup.mjs';
 import { setupCodeScanner } from './scan.mjs';
 
@@ -74,7 +75,7 @@ function catalogCard(record) {
   photoLink.append(imageFor(record));
   card.append(photoLink, element('p', 'card-code', record.productCode || record.code), element('h3', '', record.title), element('p', 'card-brand', record.brand || 'Brand line unspecified'));
   const bottom = element('div', 'card-bottom');
-  bottom.append(externalLink(record.sourceUrl, 'card-source', 'Official source ↗'), actionButton('View record →', 'inspect-button', () => submitCode(record.productCode || record.code)));
+  bottom.append(externalLink(record.sourceUrl, 'card-source', record.sourceType ? 'Archive source ↗' : 'Official source ↗'), actionButton('View record →', 'inspect-button', () => submitCode(record.productCode || record.code)));
   card.append(bottom);
   return card;
 }
@@ -88,8 +89,11 @@ function resultCard({ record, matchType }, index) {
   photoLink.append(imageFor(record, index < 2));
   const detail = element('div', 'result-detail');
   detail.append(element('span', `match-badge${matchType === 'variant-unconfirmed' ? ' unconfirmed' : ''}`, MATCH_LABELS[matchType]), element('p', 'card-code', record.productCode || record.code), element('h3', '', record.title), element('p', 'card-brand', record.brand || 'Brand line unspecified'));
-  detail.append(externalLink(record.sourceUrl, 'result-source-link', 'View original listing ↗'));
-  detail.append(element('p', 'record-source', `${record.sourceName || 'Official shop'} · Last seen ${formatDate(record.lastSeenAt)}`));
+  const sourceLabel = record.sourceType === 'runway' ? 'View runway details ↗' : 'View original listing ↗';
+  detail.append(externalLink(record.sourceUrl, 'result-source-link', sourceLabel));
+  detail.append(element('p', 'record-source', record.sourceType
+    ? record.sourceName
+    : `${record.sourceName || 'Official shop'} · Last seen ${formatDate(record.lastSeenAt)}`));
   const codes = [...new Set([record.productCode, ...(record.variantCodes || [])].filter(Boolean))];
   if (codes.length) {
     const disclosure = element('details', 'record-variants');
@@ -175,7 +179,23 @@ function renderResult() {
     if (result.type === 'none') {
       kicker = 'Not in this index';
       title = `No record for ${parsed.normalized}.`;
-      description = `This index has ${number.format(state.records.length)} source records. Older, removed, or unindexed pieces may still exist elsewhere. Continue with an exact-code search below.`;
+      description = 'No source in the shop or archive index lists this exact base code. Older pieces may appear only in resale listings or printed catalogs. Try the exact-code searches below.';
+      $('code-clues').open = true;
+      const leads = findArchiveLeads(parsed);
+      if (leads.length) {
+        const section = element('section', 'continue-search');
+        section.append(element('h3', '', 'Related archive codes'));
+        section.append(element('p', 'small muted', 'These codes share the first two groups but differ in the last three digits. They do not identify or date your garment.'));
+        const list = element('ul', 'variant-list');
+        for (const record of leads) {
+          const item = element('li');
+          item.append(externalLink(record.sourceUrl, 'result-source-link', record.productCode || record.code));
+          item.append(element('span', 'small muted', ` · ${record.sourceName}`));
+          list.append(item);
+        }
+        section.append(list);
+        $('result-actions').append(section);
+      }
     } else {
       const count = result.matches.length;
       kicker = MATCH_LABELS[result.type];
@@ -188,7 +208,7 @@ function renderResult() {
         description = `The full code is recorded by the source. ${count > exactCount ? 'Other records sharing the base code appear below as unconfirmed variants. ' : ''}Open the original listing to compare the garment and its details.`;
       } else {
         title = count === 1 ? 'A record for your product code.' : `${count} records share this product code.`;
-        description = 'These listings share the complete base code. Check the photographs and any color or size suffix against your label.';
+        description = 'These sources share the complete base code. Check the source details and any color or size suffix against your label.';
       }
       // All matching sources remain accessible; paginate unusually large groups.
       let shown = 0;
@@ -278,9 +298,9 @@ function populateCatalogInfo() {
   const data = state.catalog;
   const count = number.format(state.records.length);
   $('catalog-total').textContent = `${count} source records`;
-  $('hero-coverage').textContent = `${count} records from the official shop, ready to search.`;
+  $('hero-coverage').textContent = `${count} records from the official shop and selected historical sources.`;
   $('catalog-updated').textContent = formatDate(data.updatedAt);
-  $('coverage-text').textContent = `${count} indexed records. ${data.coverage?.complete ? 'Public shop feed retrieved in full on the import date.' : 'Partial snapshot of the public shop feed.'} Historical coverage varies.`;
+  $('coverage-text').textContent = `${count} indexed records. ${data.coverage?.complete ? 'Public shop feed retrieved in full on the import date.' : 'Partial snapshot of the public shop feed.'} Includes selected runway and resale records; historical coverage is not complete.`;
   const brands = [...new Set(state.records.map((record) => record.brand).filter(Boolean))].sort();
   $('brand-filter').replaceChildren(new Option('All brand lines', ''), ...brands.map((brand) => new Option(brand, brand)));
   $('catalog-filter').disabled = false;
@@ -311,7 +331,7 @@ async function loadCatalog() {
       const response = await fetch(new URL('../data/catalog.json', import.meta.url), { cache: 'no-cache', signal: controller.signal });
       if (!response.ok) throw new Error(`Catalog response ${response.status}`);
       const data = await response.json();
-      const records = validateCatalog(data);
+      const records = [...validateCatalog(data), ...validateCatalog({ schemaVersion: 1, records: archiveRecords })];
       const garmentRank = (record) => 'CJPBTKS'.includes(record.code[3]) ? 0 : 1;
       records.sort((a, b) => garmentRank(a) - garmentRank(b) || Number(!a.code.startsWith('H')) - Number(!b.code.startsWith('H')) || a.code.localeCompare(b.code));
       state.catalog = data;
