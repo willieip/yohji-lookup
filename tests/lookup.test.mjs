@@ -8,6 +8,7 @@ import {
   readHistory,
   saveHistory,
   clearHistory,
+  vintageStatus,
 } from "../js/lookup.mjs";
 
 const white = {
@@ -233,4 +234,16 @@ test("historical sources match exact labels without conflating related model cod
   assert.equal(findMatches(archiveRecords, missing).type, "none");
   assert.deepEqual(findArchiveLeads(missing).map(r => r.productCode), ["FD-J05-200-1"]);
   assert.deepEqual(findArchiveLeads(normalizeCode("FD-J05-200-99")), []);
+});
+
+
+test("vintage status uses sourced collection years, never observation dates", () => {
+  assert.equal(vintageStatus({ collectionYear: 2004, sourceType: "runway" }, 2026).label, "Vintage");
+  assert.equal(vintageStatus({ collectionYear: 2004, sourceType: "resale" }, 2026).label, "Likely vintage");
+  assert.equal(vintageStatus({ collectionYear: 2006, sourceType: "runway" }, 2026).label, "At the 20-year cutoff");
+  assert.equal(vintageStatus({ collectionYear: 2021, sourceType: "runway" }, 2026).label, "Not vintage");
+  assert.equal(vintageStatus({ collectionYear: 0, sourceType: "resale" }, 2026).label, "Age unverified");
+  assert.equal(vintageStatus({ lastSeenAt: "2000-01-01" }, 2026).label, "Age unverified");
+  assert.equal(vintageStatus({ collectionYear: 2004 }, 2026).label, "Age unverified");
+  assert.equal(vintageStatus({ sourceType: "runway", collectionYear: 2027 }, 2026).label, "Age unverified");
 });
