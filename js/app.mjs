@@ -1,5 +1,5 @@
 import { archiveRecords, findArchiveLeads } from './archive.mjs';
-import { normalizeCode, findMatches, getCodeHints, buildSearchLinks, readHistory, saveHistory, clearHistory } from './lookup.mjs';
+import { normalizeCode, findMatches, getCodeHints, buildSearchLinks, readHistory, saveHistory, clearHistory, vintageStatus } from './lookup.mjs';
 import { setupCodeScanner } from './scan.mjs';
 
 const $ = (id) => document.getElementById(id);
@@ -94,6 +94,14 @@ function resultCard({ record, matchType }, index) {
   detail.append(element('p', 'record-source', record.sourceType
     ? record.sourceName
     : `${record.sourceName || 'Official shop'} · Last seen ${formatDate(record.lastSeenAt)}`));
+  if (matchType === 'variant-unconfirmed') {
+    detail.append(element('p', 'record-source', 'Age unverified for the suffix you entered.'));
+  } else {
+    const vintage = vintageStatus(record);
+    const line = element('p', 'record-source');
+    line.append(element('strong', '', vintage.label), document.createTextNode(` · ${vintage.detail}`));
+    detail.append(line);
+  }
   const codes = [...new Set([record.productCode, ...(record.variantCodes || [])].filter(Boolean))];
   if (codes.length) {
     const disclosure = element('details', 'record-variants');
@@ -179,7 +187,7 @@ function renderResult() {
     if (result.type === 'none') {
       kicker = 'Not in this index';
       title = `No record for ${parsed.normalized}.`;
-      description = 'No source in the shop or archive index lists this exact base code. Older pieces may appear only in resale listings or printed catalogs. Try the exact-code searches below.';
+      description = 'No source in the shop or archive index lists this exact base code. Older pieces may appear only in resale listings or printed catalogs. Vintage status is unverified. Try the exact-code searches below.';
       $('code-clues').open = true;
       const leads = findArchiveLeads(parsed);
       if (leads.length) {
