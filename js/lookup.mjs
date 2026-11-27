@@ -137,6 +137,31 @@ export function getCodeHints(parsed) {
   };
 }
 
+/**
+ * This site's rule of thumb is at least 20 years old. With only a collection
+ * year, the boundary year can fall on either side of the exact anniversary.
+ * Shop observation dates and reused label letters are not collection dates.
+ */
+export function vintageStatus(record, currentYear = new Date().getFullYear()) {
+  const { collectionYear: year, sourceType } = record || {};
+  if (!Number.isInteger(year) || year < 1000 || year > currentYear
+      || !['runway', 'resale'].includes(sourceType)) {
+    return { label: 'Age unverified', detail: 'No collection year is documented for this record.' };
+  }
+  const years = currentYear - year;
+  const age = years > 20 ? 'Vintage' : years < 20 ? 'Not vintage' : 'At the 20-year cutoff';
+  if (sourceType === 'resale') {
+    return {
+      label: age === 'Vintage' ? 'Likely vintage' : age === 'Not vintage' ? 'Likely not vintage' : age,
+      detail: `${year} is the seller’s attribution, not an official collection date.`,
+    };
+  }
+  return {
+    label: age,
+    detail: `${year} collection, documented by Yohji Yamamoto.`,
+  };
+}
+
 function googleURL(query, images = false) {
   const url = new URL("https://www.google.com/search");
   url.searchParams.set("q", query);
