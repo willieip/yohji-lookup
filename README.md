@@ -43,6 +43,19 @@ The snapshot imported on **October 30, 2026** contains **9,095 product/colorway 
 
 The app fetches its own checked-in JSON snapshot. Browser searches require no API key or cross-site catalog request. Product photographs load from the source's image URLs; the original listing remains the authority for details, stock, and pricing. No prices, stock claims, full descriptions, or inferred seasons are stored.
 
+## Historical records
+
+The separately maintained `js/archive.mjs` indexes exact product numbers from
+the official Femme Spring/Summer 2021 runway details and selected vintage
+resale listings. Each record links to its source. A resale date is the
+seller’s attribution, not a confirmed collection date. These records are not
+overwritten by a refresh of the official shop feed.
+
+On a miss, the lookup may show **related archive codes** that share the first
+two groups. Different last-three-digit groups are never treated as a match.
+For example, `FD-J05-102` is not identified by the archive’s
+`FD-J05-200-1` (Femme Spring/Summer 2021, Look 11).
+
 ## Runway references
 
 The open Reference Chart includes links to the [official shop lookbooks](https://theshopyohjiyamamoto.jp/shop/pages/look_list.aspx), the [official POUR HOMME collection archive](https://www.yohjiyamamoto.co.jp/en/collection/homme/), and [Vogue Runway](https://www.vogue.com/fashion-shows/designer/yohji-yamamoto).
