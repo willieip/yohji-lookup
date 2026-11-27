@@ -51,6 +51,12 @@ resale listings. Each record links to its source. A resale date is the
 seller’s attribution, not a confirmed collection date. These records are not
 overwritten by a refresh of the official shop feed.
 
+Vintage means 20 years or older for this lookup. An official collection year
+supports an age assessment; a resale year is explicitly attributed to the seller.
+A collection exactly 20 calendar years back is marked as being at the cutoff,
+since the exact anniversary is unknown. A repeated season letter, a similar code,
+or the date an item entered the index cannot establish vintage status.
+
 On a miss, the lookup may show **related archive codes** that share the first
 two groups. Different last-three-digit groups are never treated as a match.
 For example, `FD-J05-102` is not identified by the archive’s
