@@ -69,12 +69,15 @@ try {
   assert.equal(await page.locator('#result-kicker').textContent(), 'Not in this index');
   assert.equal(await page.locator('.result-card').count(), 0);
   assert.equal(await page.locator('#code-clues').getAttribute('open'), '');
+  assert.match(await page.locator('#result-description').innerText(), /Vintage status is unverified/);
   assert.match(await page.locator('#result-actions').innerText(), /FD-J05-200-1.*Look 11/s);
   assert.match(await page.locator('#result-actions').innerText(), /do not identify or date/);
   await lookup('FD-J05-200-1');
   assert.match(await page.locator('#result-grid').innerText(), /runway archive.*Look 11/s);
+  assert.match(await page.locator('#result-grid').innerText(), /Not vintage.*2021 collection/);
   await lookup('FJ-J34-109');
   assert.match(await page.locator('#result-grid').innerText(), /MODESCAPE resale listing/);
+  assert.match(await page.locator('#result-grid').innerText(), /Likely vintage.*seller/);
   await lookup('HCC');
   assert.equal(await page.locator('#result-kicker').textContent(), 'Label clues only');
   assert.equal(await page.locator('.result-card').count(), 0);
