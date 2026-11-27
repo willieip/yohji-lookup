@@ -65,6 +65,16 @@ try {
   await lookup('ZZ-Z99-999');
   assert.equal(await page.locator('#result-kicker').textContent(), 'Not in this index');
   assert.equal(await page.locator('#search-links a').count(), 5);
+  await lookup('FD-J05-102');
+  assert.equal(await page.locator('#result-kicker').textContent(), 'Not in this index');
+  assert.equal(await page.locator('.result-card').count(), 0);
+  assert.equal(await page.locator('#code-clues').getAttribute('open'), '');
+  assert.match(await page.locator('#result-actions').innerText(), /FD-J05-200-1.*Look 11/s);
+  assert.match(await page.locator('#result-actions').innerText(), /do not identify or date/);
+  await lookup('FD-J05-200-1');
+  assert.match(await page.locator('#result-grid').innerText(), /runway archive.*Look 11/s);
+  await lookup('FJ-J34-109');
+  assert.match(await page.locator('#result-grid').innerText(), /MODESCAPE resale listing/);
   await lookup('HCC');
   assert.equal(await page.locator('#result-kicker').textContent(), 'Label clues only');
   assert.equal(await page.locator('.result-card').count(), 0);
