@@ -218,3 +218,19 @@ test("cleared history does not resurrect legacy entries", () => {
   storage.setItem("yohjiHistory", JSON.stringify([{ serial: "HC-C23-100" }]));
   assert.deepEqual(readHistory(storage), [], "an empty current history takes precedence over a leftover legacy key");
 });
+
+
+test("historical sources match exact labels without conflating related model codes", async () => {
+  const { archiveRecords, findArchiveLeads } = await import("../js/archive.mjs");
+  assert.equal(archiveRecords.filter((r) => r.sourceType === "runway").length, 73);
+  const vintage = findMatches(archiveRecords, normalizeCode("FJ-J34-109"));
+  assert.equal(vintage.type, "style");
+  assert.equal(vintage.matches[0].record.sourceType, "resale");
+  const official = findMatches(archiveRecords, normalizeCode("FD-J05-200-1"));
+  assert.equal(official.type, "exact");
+  assert.match(official.matches[0].record.sourceName, /Look 11/);
+  const missing = normalizeCode("fd j05 102");
+  assert.equal(findMatches(archiveRecords, missing).type, "none");
+  assert.deepEqual(findArchiveLeads(missing).map(r => r.productCode), ["FD-J05-200-1"]);
+  assert.deepEqual(findArchiveLeads(normalizeCode("FD-J05-200-99")), []);
+});
